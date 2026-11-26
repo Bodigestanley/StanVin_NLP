@@ -1,0 +1,81 @@
+text,label
+The shoes are too tight and do not fit my feet,Sizing
+The shirt is too small around the chest,Sizing
+This jacket is much larger than expected,Sizing
+The dress size does not fit me,Sizing
+The trousers are too long for me,Sizing
+The product arrived with a cracked screen,Damaged Item
+The box contained a broken and damaged item,Damaged Item
+The headphones are defective and do not work,Damaged Item
+The glass arrived shattered,Damaged Item
+The item has scratches and physical damage,Damaged Item
+I ordered black shoes but received white shoes,Wrong Product
+This is not the product I purchased,Wrong Product
+I received the wrong item in my package,Wrong Product
+The delivered model is different from my order,Wrong Product
+I ordered a blue bag but got a red bag,Wrong Product
+My package arrived five days after the promised date,Late Delivery
+The delivery was delayed and came too late,Late Delivery
+My order did not arrive on the expected date,Late Delivery
+The courier delivered my parcel late,Late Delivery
+The shipment arrived after the event was over,Late Delivery
+The shoes feel narrow and squeeze my toes.,Sizing
+This sweater is too loose around my shoulders.,Sizing
+I ordered size eight but the fit is much too small.,Sizing
+The waist on these jeans is too tight.,Sizing
+The jacket sleeves are longer than my arms.,Sizing
+The dress runs smaller than the size chart.,Sizing
+These boots are too wide for my feet.,Sizing
+The shirt is oversized and hangs awkwardly.,Sizing
+The trousers are too short in the leg.,Sizing
+The top does not fit across my chest.,Sizing
+The sneakers are one size too small.,Sizing
+The coat is too big around the waist.,Sizing
+The waistband feels tight when I sit.,Sizing
+The sleeves are too short for me.,Sizing
+The item fits much larger than expected.,Sizing
+The parcel arrived with a cracked plastic casing.,Damaged Item
+The product is broken and cannot be used.,Damaged Item
+There is a tear in the fabric near the seam.,Damaged Item
+The delivered mug has a chipped handle.,Damaged Item
+The screen is scratched straight out of the package.,Damaged Item
+The appliance arrived damaged and will not switch on.,Damaged Item
+The package was crushed and the item inside is bent.,Damaged Item
+One part is missing because the item is broken.,Damaged Item
+The product has a visible crack on its surface.,Damaged Item
+The zipper is broken on the new bag.,Damaged Item
+The item arrived with dents and scratches.,Damaged Item
+The headphones have a faulty left speaker.,Damaged Item
+The glass container was shattered during shipping.,Damaged Item
+The product is defective and stops working.,Damaged Item
+The frame is bent and damaged.,Damaged Item
+I ordered a blue backpack but got a red one.,Wrong Product
+The package contains a different model than I selected.,Wrong Product
+I received a phone case instead of a charger.,Wrong Product
+The delivered shoes are not the ones in my order.,Wrong Product
+This is the wrong colour and wrong product.,Wrong Product
+I ordered a large bottle but received a small one.,Wrong Product
+The parcel has another customer's item inside.,Wrong Product
+The item delivered does not match my order.,Wrong Product
+I received a different brand from the one purchased.,Wrong Product
+The box contains a different size and style.,Wrong Product
+I ordered headphones but received a speaker.,Wrong Product
+The product code on the item is not what I bought.,Wrong Product
+The wrong design was sent to me.,Wrong Product
+This package contains the wrong item.,Wrong Product
+I got a different product than the one shown in my order.,Wrong Product
+The parcel arrived three days after the promised date.,Late Delivery
+My order was delivered much later than expected.,Late Delivery
+The delivery missed the estimated arrival date.,Late Delivery
+The package came a week late.,Late Delivery
+The courier delivered this after the event was over.,Late Delivery
+The shipment was delayed beyond the promised date.,Late Delivery
+I received the order late and no longer need it.,Late Delivery
+The delivery took longer than the scheduled time.,Late Delivery
+My package arrived after the expected delivery window.,Late Delivery
+The order was delayed for several days.,Late Delivery
+The parcel did not arrive on the promised day.,Late Delivery
+The courier brought my order too late.,Late Delivery
+Delivery was postponed twice and arrived late.,Late Delivery
+The shipment reached me after the deadline.,Late Delivery
+The item arrived late compared with the delivery estimate.,Late Delivery

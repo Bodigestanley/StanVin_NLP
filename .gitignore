@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+# Environment secrets
+.env
+*.env
+!.env.example
+# Model artifacts and datasets
+models/
+data/processed/*
+!data/processed/.gitkeep
+# Frontend
+node_modules/
+dist/
+*.tsbuildinfo
+# Reports generated locally
+reports/

@@ -1,0 +1,80 @@
+{
+  "accuracy": 0.9966666666666667,
+  "macro_f1": 0.9966665185119339,
+  "weighted_f1": 0.9966665185119339,
+  "classification_report": {
+    "Damaged Item": {
+      "precision": 0.9868421052631579,
+      "recall": 1.0,
+      "f1-score": 0.9933774834437086,
+      "support": 75.0
+    },
+    "Late Delivery": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 75.0
+    },
+    "Sizing": {
+      "precision": 1.0,
+      "recall": 0.9866666666666667,
+      "f1-score": 0.9932885906040269,
+      "support": 75.0
+    },
+    "Wrong Product": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 75.0
+    },
+    "accuracy": 0.9966666666666667,
+    "macro avg": {
+      "precision": 0.9967105263157895,
+      "recall": 0.9966666666666667,
+      "f1-score": 0.9966665185119339,
+      "support": 300.0
+    },
+    "weighted avg": {
+      "precision": 0.9967105263157894,
+      "recall": 0.9966666666666667,
+      "f1-score": 0.9966665185119339,
+      "support": 300.0
+    }
+  },
+  "confusion_matrix": [
+    [
+      75,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      75,
+      0,
+      0
+    ],
+    [
+      1,
+      0,
+      74,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      75
+    ]
+  ],
+  "labels": [
+    "Damaged Item",
+    "Late Delivery",
+    "Sizing",
+    "Wrong Product"
+  ],
+  "n_rows": 1500,
+  "train_rows": 1200,
+  "test_rows": 300,
+  "dataset_source": "synthetic"
+}
