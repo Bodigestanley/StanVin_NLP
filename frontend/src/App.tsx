@@ -104,8 +104,54 @@ export default function App() {
       setHealth(h); setHistory(p.items || []); setMetrics(m)
     } catch { setHealth(null) }
   }
-  useEffect(() => { refresh(); const t = window.setInterval(refresh, 15000); return () => window.clearInterval(t) }, [])
-  const go = (p: Page) => { setPage(p); setMenuOpen(false); setError(''); setBatchError('') }
+  useEffect(() => {
+  refresh()
+  const t = window.setInterval(refresh, 15000)
+  return () => window.clearInterval(t)
+}, [])
+
+useEffect(() => {
+  window.history.replaceState(
+    { ...window.history.state, stanvinView: 'landing' },
+    '',
+    window.location.href
+  )
+
+  const handlePopState = (event: PopStateEvent) => {
+    const isOverview = event.state?.stanvinView === 'overview'
+    setEntered(isOverview)
+
+    if (isOverview) {
+      setPage('Overview')
+    }
+
+    setMenuOpen(false)
+  }
+
+  window.addEventListener('popstate', handlePopState)
+  return () => window.removeEventListener('popstate', handlePopState)
+}, [])
+
+const go = (p: Page) => {
+  setPage(p)
+  setMenuOpen(false)
+  setError('')
+  setBatchError('')
+}
+
+const enterWorkspace = (target: Page = 'Overview') => {
+  window.history.pushState(
+    { stanvinView: 'overview' },
+    '',
+    window.location.href
+  )
+  setPage(target)
+  setEntered(true)
+}
+
+const returnToLanding = () => {
+  window.history.back()
+}
 
   async function predict() {
     if (text.trim().length < 3) { setError('Enter at least 3 characters.'); return }
@@ -167,7 +213,7 @@ export default function App() {
     finally { setBatchBusy(false) }
   }
   function exportBatch() {
-    downloadCSV([['text', 'actual_label', 'predicted_category', 'confidence', 'model_used', 'probabilities'], ...batch.map(r => [r.text, r.actual || '', r.predicted_category, r.confidence, r.model_used, JSON.stringify(r.probabilities || {})])], 'returniq_batch_predictions.csv')
+    downloadCSV([['text', 'actual_label', 'predicted_category', 'confidence', 'model_used', 'probabilities'], ...batch.map(r => [r.text, r.actual || '', r.predicted_category, r.confidence, r.model_used, JSON.stringify(r.probabilities || {})])], 'StanVin_batch_predictions.csv')
   }
 
   const total = batch.length
@@ -187,20 +233,27 @@ export default function App() {
   const dbTotal = history.length
   const recentCounts = labels.map((label, i) => ({ label, count: history.filter(r => r.category === label).length, color: palette[i] }))
 
-  return !entered ? <Landing onEnter={() => { setEntered(true); go('Overview') }} onHow={() => { setEntered(true); go('How It Works') }} /> : (
+  return !entered ? (
+  <Landing
+    onEnter={() => enterWorkspace('Overview')}
+    onHow={() => enterWorkspace('How It Works')}
+  />
+) : (
     <div className="app-shell">
       <aside className={`sidebar ${menuOpen ? 'open' : ''}`}>
-        <div className="brand"><div className="brand-mark"><Boxes size={20}/></div><div><b>ReturnIQ</b><small>RETURNS INTELLIGENCE</small></div><button className="mobile-close" onClick={() => setMenuOpen(false)}><X size={18}/></button></div>
+        <div className="brand"><div className="brand-mark"><Boxes size={20}/></div><div><b>StanVin</b><small>RETURNS INTELLIGENCE</small></div><button className="mobile-close" onClick={() => setMenuOpen(false)}><X size={18}/></button></div>
         {['WORKSPACE', 'INTELLIGENCE', 'LEARN'].map(group => <div className="nav-group" key={group}><span className="nav-label">{group}</span>{nav.filter(n => n.group === group).map(n => { const I = n.icon; return <button key={n.name} className={`nav-item ${page === n.name ? 'active' : ''}`} onClick={() => go(n.name)}><I size={17}/><span>{n.name}</span>{page === n.name && <ChevronRight size={14}/>}</button> })}</div>)}
         <div className="sidebar-foot"><span className={`live-dot ${health?.database_connected ? '' : 'offline'}`}/><div><b>Workspace status</b><small>{health?.database_connected ? 'PostgreSQL connected' : 'Database unavailable'}</small></div></div>
-        <button className="back-home" onClick={() => setEntered(false)}>← Back to website</button>
+        <button className="back-home" onClick={returnToLanding}>
+  ← Back to website
+</button>
       </aside>
       <main className="main-area">
-        <header className="topbar"><button className="mobile-menu" onClick={() => setMenuOpen(true)}><Menu/></button><div className="breadcrumb">ReturnIQ <span>/</span> {page}</div><div className="top-actions"><span className={`connection ${health?.database_connected ? 'connected' : ''}`}><i/>{health?.database_connected ? 'DATABASE LIVE' : 'DATABASE CHECK'}</span><button className="icon-button" onClick={refresh} title="Refresh"><RefreshCw size={16}/></button><div className="avatar">R</div></div></header>
+        <header className="topbar"><button className="mobile-menu" onClick={() => setMenuOpen(true)}><Menu/></button><div className="breadcrumb">StanVin <span>/</span> {page}</div><div className="top-actions"><span className={`connection ${health?.database_connected ? 'connected' : ''}`}><i/>{health?.database_connected ? 'DATABASE LIVE' : 'DATABASE CHECK'}</span><button className="icon-button" onClick={refresh} title="Refresh"><RefreshCw size={16}/></button><div className="avatar">R</div></div></header>
         <div className="page-content">
           {page === 'Overview' && <Overview history={history} total={dbTotal} health={health} counts={recentCounts} onNavigate={go} />}
           {page === 'Prediction Studio' && <><Heading eyebrow="NLP WORKSPACE" title="Prediction Studio" detail="Classify an individual customer comment and inspect the model's score distribution."/><div className="two-col"><Panel><label className="field-label">CUSTOMER RETURN COMMENT</label><textarea className="comment-input" value={text} onChange={e => setText(e.target.value)} maxLength={3000}/><div className="field-meta"><span>{text.length}/3000 characters</span><button className="subtle-link" onClick={() => setText(examples[Math.floor(Math.random() * examples.length)])}>Load example</button></div><label className="field-label">CLASSIFICATION MODEL</label><ModelPicker model={model} setModel={setModel} health={health}/><button className="primary-button full" onClick={predict} disabled={busy}>{busy ? 'Classifying…' : 'Classify return reason'} <ArrowRight size={16}/></button>{error && <div className="error-box">{error}</div>}</Panel><Panel className="result-panel">{result ? <PredictionResult result={result}/> : <div className="empty-state"><div className="empty-orb"><BrainCircuit size={30}/></div><b>Prediction results appear here</b><p>Run a classification to see the predicted reason, confidence and score breakdown.</p></div>}</Panel></div></>}
-          {page === 'Batch Intelligence' && <><Heading eyebrow="DATA IMPORT & ANALYTICS" title="Returns intelligence workspace" detail="Upload a CSV to classify every valid review and build an interactive dashboard from the results."/><Panel className="upload-panel"><div className="upload-layout"><label className="drop-zone"><input id="csv-file" type="file" accept=".csv,text/csv" onChange={(e: ChangeEvent<HTMLInputElement>) => onFile(e.target.files?.[0])}/><div className="upload-symbol"><FileSpreadsheet size={25}/></div><b>Drop a CSV here or browse files</b><span>Any CSV with a customer review / text column. Up to your browser's available memory.</span></label><div className="upload-instructions"><b>What ReturnIQ will do</b><ul><li>Detect the review text column automatically</li><li>Classify every valid row in chunks</li><li>Build category, confidence and quality insights</li><li>Let you drill into individual customer comments</li></ul></div></div>
+          {page === 'Batch Intelligence' && <><Heading eyebrow="DATA IMPORT & ANALYTICS" title="Returns intelligence workspace" detail="Upload a CSV to classify every valid review and build an interactive dashboard from the results."/><Panel className="upload-panel"><div className="upload-layout"><label className="drop-zone"><input id="csv-file" type="file" accept=".csv,text/csv" onChange={(e: ChangeEvent<HTMLInputElement>) => onFile(e.target.files?.[0])}/><div className="upload-symbol"><FileSpreadsheet size={25}/></div><b>Drop a CSV here or browse files</b><span>Any CSV with a customer review / text column. Up to your browser's available memory.</span></label><div className="upload-instructions"><b>What StanVin will do</b><ul><li>Detect the review text column automatically</li><li>Classify every valid row in chunks</li><li>Build category, confidence and quality insights</li><li>Let you drill into individual customer comments</li></ul></div></div>
             {fileName && <div className="file-info"><FileSpreadsheet size={18}/><div><b>{fileName}</b><small>{imported.length.toLocaleString()} valid reviews detected · {headers.length} columns</small></div><button className="text-button" onClick={() => { setImported([]); setBatch([]); setFileName('') }}>Remove</button></div>}
             {headers.length > 0 && <div className="column-selectors"><label>Review text column<select value={textColumn} onChange={e => updateColumn('text', e.target.value)}>{headers.map(h => <option key={h}>{h}</option>)}</select></label><label>Actual label column (optional)<select value={labelColumn} onChange={e => updateColumn('label', e.target.value)}><option value="">Not available</option>{headers.map(h => <option key={h}>{h}</option>)}</select></label></div>}
             {imported.length > 0 && <div className="batch-actions"><div><b>{imported.length.toLocaleString()} reviews ready</b><small>All valid rows will be classified. No 500-row truncation.</small></div><select value={model} onChange={e => setModel(e.target.value as Model)}><option value="tfidf">TF-IDF + Logistic Regression</option><option value="distilbert" disabled={!health?.distilbert_model_available}>Fine-tuned DistilBERT</option></select><button className="primary-button" onClick={runBatch} disabled={batchBusy}>{batchBusy ? 'Processing…' : 'Build intelligence dashboard'} <ArrowRight size={16}/></button></div>}
@@ -211,9 +264,9 @@ export default function App() {
           </>}
           {page === 'Dataset Explorer' && <><Heading eyebrow="DATA EXPLORER" title="Inspect classified comments" detail="Search and filter the uploaded dataset, inspect confidence and open category-level details."/><DatasetTable rows={batch} filtered={filteredBatch} query={query} setQuery={setQuery} filter={filterCategory} setFilter={setFilterCategory} onCategory={c => { setSelectedCategory(c); go('Batch Intelligence') }}/></>}
           {page === 'Model Laboratory' && <><Heading eyebrow="MODEL PERFORMANCE" title="Model laboratory" detail="Compare TF-IDF + Logistic Regression with your fine-tuned DistilBERT model on the same held-out test split."/><div className="model-grid"><Panel><div className="model-head"><div className="model-icon"><Layers3/></div><span className="status-tag">BASELINE</span></div><h3>TF-IDF + Logistic Regression</h3><p>Converts text into word and bigram importance features, then learns a linear decision boundary for the four return classes.</p><div className="model-facts"><span>Fast inference</span><span>Interpretable feature weights</span><span>Low resource footprint</span></div><b className="availability">{health?.tfidf_model_available ? 'Model artifact available' : 'Model artifact missing'}</b></Panel><Panel><div className="model-head"><div className="model-icon"><BrainCircuit/></div><span className="status-tag advanced">TRANSFORMER</span></div><h3>Fine-tuned DistilBERT</h3><p>Uses contextual token representations to interpret the meaning of a comment beyond isolated word counts.</p><div className="model-facts"><span>Context-aware</span><span>Fine-tuned locally</span><span>Higher compute cost</span></div><b className={`availability ${health?.distilbert_model_available ? 'ready' : ''}`}>{health?.distilbert_model_available ? 'Model artifact available' : 'Model artifact missing'}</b></Panel></div><Panel><h3 className="panel-title">Head-to-head evaluation</h3><p className="muted">Both models were evaluated on the same 3,000-row synthetic test split (750 examples per class).</p><div className="table-scroll"><table><thead><tr><th>Model</th><th>Accuracy</th><th>Macro precision</th><th>Macro recall</th><th>Macro F1</th><th>Weighted F1</th></tr></thead><tbody><tr><td>TF-IDF + Logistic Regression</td><td>100.0%</td><td>100.0%</td><td>100.0%</td><td>100.0%</td><td>100.0%</td></tr><tr><td>Fine-tuned DistilBERT</td><td>100.0%</td><td>100.0%</td><td>100.0%</td><td>100.0%</td><td>100.0%</td></tr></tbody></table></div><p className="footnote">These are development results on synthetic data, not evidence of real-world performance. Validate with representative, independently labelled customer returns before deployment.</p></Panel><div className="analytics-grid"><ConfusionMatrix title="TF-IDF confusion matrix" /><ConfusionMatrix title="DistilBERT confusion matrix" /></div><Panel><h3 className="panel-title">Latest saved evaluation snapshot</h3>{metrics?.available ? <div className="metric-strip"><Kpi icon={Target} label="Test accuracy" value={pct(metrics.accuracy || 0)} hint="Saved evaluation"/><Kpi icon={Activity} label="Macro F1" value={pct(metrics.macro_f1 || 0)} hint="Equal class weighting"/><Kpi icon={BarChart3} label="Weighted F1" value={pct(metrics.weighted_f1 || 0)} hint="Support-weighted"/></div> : <p className="muted">No separate backend evaluation snapshot is available. The comparison above uses the generated model-comparison report.</p>}</Panel></>}
-          {page === 'How It Works' && <><Heading eyebrow="PRODUCT & METHODOLOGY" title="How ReturnIQ turns comments into return intelligence" detail="An interactive walkthrough of the multilingual classification pipeline, from customer text to model evaluation and operational action."/><InteractivePipeline/><div className="value-grid"><Panel><h3>Why returns intelligence matters</h3><p>Return reasons are often buried in free-text notes, support tickets and reviews. Consistent categories help teams identify recurring product, quality, catalog and delivery issues.</p></Panel><Panel><h3>What the four classes mean</h3><p><b>Sizing:</b> fit or dimensions are wrong. <b>Damaged Item:</b> broken or defective on arrival. <b>Wrong Product:</b> delivered item differs from the order. <b>Late Delivery:</b> arrives after the promised date.</p></Panel><Panel><h3>What the models do not do</h3><p>They classify the stated return reason. They do not verify order status, prove a product is defective, approve refunds, translate every language perfectly or replace human review.</p></Panel></div></>}
+          {page === 'How It Works' && <><Heading eyebrow="PRODUCT & METHODOLOGY" title="How StanVin turns comments into return intelligence" detail="An interactive walkthrough of the multilingual classification pipeline, from customer text to model evaluation and operational action."/><InteractivePipeline/><div className="value-grid"><Panel><h3>Why returns intelligence matters</h3><p>Return reasons are often buried in free-text notes, support tickets and reviews. Consistent categories help teams identify recurring product, quality, catalog and delivery issues.</p></Panel><Panel><h3>What the four classes mean</h3><p><b>Sizing:</b> fit or dimensions are wrong. <b>Damaged Item:</b> broken or defective on arrival. <b>Wrong Product:</b> delivered item differs from the order. <b>Late Delivery:</b> arrives after the promised date.</p></Panel><Panel><h3>What the models do not do</h3><p>They classify the stated return reason. They do not verify order status, prove a product is defective, approve refunds, translate every language perfectly or replace human review.</p></Panel></div></>}
         </div>
-        <footer className="app-footer"><span>RETURNIQ · E-COMMERCE RETURNS INTELLIGENCE</span><span>LOCAL NLP · AUDITABLE PREDICTIONS · HUMAN REVIEW</span></footer>
+        <footer className="app-footer"><span>StanVin · E-COMMERCE RETURNS INTELLIGENCE</span><span>LOCAL NLP · AUDITABLE PREDICTIONS · HUMAN REVIEW</span></footer>
       </main>
     </div>
   )
@@ -222,7 +275,7 @@ export default function App() {
 
 function InteractivePipeline() {
   const steps = [
-    {title:'1. Capture customer feedback',tag:'INPUT',detail:'ReturnIQ accepts a customer comment in Prediction Studio or a CSV file in Batch Intelligence. The original text is retained for review.',example:'“నేను నల్ల షూస్ ఆర్డర్ చేశాను కానీ తెల్ల సాండల్స్ వచ్చాయి.”',output:'Raw customer comment and optional CSV ground-truth label',note:'Supported input styles include English, Telugu, Hindi, Hinglish and Romanized Telugu/Hindi.'},
+    {title:'1. Capture customer feedback',tag:'INPUT',detail:'StanVin accepts a customer comment in Prediction Studio or a CSV file in Batch Intelligence. The original text is retained for review.',example:'“నేను నల్ల షూస్ ఆర్డర్ చేశాను కానీ తెల్ల సాండల్స్ వచ్చాయి.”',output:'Raw customer comment and optional CSV ground-truth label',note:'Supported input styles include English, Telugu, Hindi, Hinglish and Romanized Telugu/Hindi.'},
     {title:'2. Detect language',tag:'LANGUAGE',detail:'The API checks Telugu and Devanagari Unicode scripts first. Latin-script text is checked for common Romanized Telugu and Hindi cues.',example:'Telugu script → Telugu  |  “naaku ... kavali” → Romanized Telugu  |  “mujhe ... chahiye” → Hinglish / Romanized Hindi',output:'Detected-language label; original text remains unchanged',note:'This is a lightweight heuristic, not full translation. Mixed-language or uncommon transliterations can be ambiguous.'},
     {title:'3. Prepare model input',tag:'PREPROCESS',detail:'TF-IDF lowercases text, removes URLs and punctuation while preserving Unicode letters, then builds word and bigram features. DistilBERT tokenizes the original sentence into contextual subword tokens.',example:'“Shoes size chart se bhi chhote nikle” → TF-IDF features or DistilBERT token IDs and attention mask.',output:'Sparse TF-IDF feature vector or transformer token tensors',note:'The two models use different text representations, so their predictions and scores need not match.'},
     {title:'4. Classify with the selected model',tag:'MODEL',detail:'TF-IDF + Logistic Regression is the fast baseline. Fine-tuned multilingual DistilBERT uses contextual transformer representations and is available after its trained checkpoint is saved.',example:'“The parcel arrived with a cracked screen.” → expected category: Damaged Item.',output:'Sizing, Damaged Item, Wrong Product or Late Delivery',note:'Both models are trained on the same labelled dataset and fixed split, but different algorithms can disagree on individual comments.'},
@@ -245,7 +298,7 @@ function InteractivePipeline() {
   const step=steps[active];
   return <Panel>
     <div className="interactive-pipeline-head">
-      <div><span className="eyebrow">INTERACTIVE WALKTHROUGH</span><h3 className="panel-title">Explore the ReturnIQ pipeline</h3><p className="muted">Select a stage or play the guided walkthrough.</p></div>
+      <div><span className="eyebrow">INTERACTIVE WALKTHROUGH</span><h3 className="panel-title">Explore the StanVin pipeline</h3><p className="muted">Select a stage or play the guided walkthrough.</p></div>
       <button className="pipeline-play" onClick={()=>setPlaying(v=>!v)}>{playing?'Pause walkthrough':'▶ Play walkthrough'}</button>
     </div>
     <div className="pipeline-progress" aria-label={`Step ${active+1} of ${steps.length}`}>
@@ -268,16 +321,16 @@ function InteractivePipeline() {
 
 function Landing({ onEnter, onHow }: { onEnter: () => void; onHow: () => void }) {
   return <div className="landing-page">
-    <nav className="landing-nav"><div className="brand light"><div className="brand-mark"><Boxes size={20}/></div><div><b>ReturnIQ</b><small>RETURNS INTELLIGENCE</small></div></div><div className="landing-links"><a href="#problem">The problem</a><a href="#platform">Platform</a><a href="#workflow">How it works</a></div><button className="nav-cta" onClick={onEnter}>Explore demo <ArrowRight size={15}/></button></nav>
-    <section className="landing-hero"><div className="landing-copy"><span className="eyebrow light-eyebrow"><Sparkles size={14}/> CUSTOMER SIGNAL. BUSINESS CLARITY.</span><h1>Every return has<br/><em>a reason. Find it.</em></h1><p>ReturnIQ turns unstructured e-commerce return comments into clear, measurable signals — helping teams understand product fit, quality, catalog accuracy and delivery experience.</p><div className="landing-actions"><button className="primary-button" onClick={onEnter}>Explore interactive demo <ArrowRight size={17}/></button><button className="outline-light" onClick={onHow}>Explore the method</button></div><div className="trust-line"><span><Check size={14}/> Local NLP models</span><span><Check size={14}/> Four actionable categories</span><span><Check size={14}/> Review-level traceability</span></div></div>
+    <nav className="landing-nav"><div className="brand light"><div className="brand-mark"><Boxes size={20}/></div><div><b>StanVin</b><small>RETURNS INTELLIGENCE</small></div></div><div className="landing-links"><a href="#problem">The problem</a><a href="#platform">Platform</a><a href="#workflow">How it works</a></div><button className="nav-cta" onClick={onEnter}>Explore demo <ArrowRight size={15}/></button></nav>
+    <section className="landing-hero"><div className="landing-copy"><span className="eyebrow light-eyebrow"><Sparkles size={14}/> CUSTOMER SIGNAL. BUSINESS CLARITY.</span><h1>Every return has<br/><em>a reason. Find it.</em></h1><p>StanVin turns unstructured e-commerce return comments into clear, measurable signals — helping teams understand product fit, quality, catalog accuracy and delivery experience.</p><div className="landing-actions"><button className="primary-button" onClick={onEnter}>Explore interactive demo <ArrowRight size={17}/></button><button className="outline-light" onClick={onHow}>Explore the method</button></div><div className="trust-line"><span><Check size={14}/> Local NLP models</span><span><Check size={14}/> Four actionable categories</span><span><Check size={14}/> Review-level traceability</span></div></div>
       <div className="hero-3d" aria-label="Abstract 3D return intelligence visualization"><div className="scene-grid"/><div className="orbit3d orbit-one"/><div className="orbit3d orbit-two"/><div className="glass-cube cube-a"><span>RETURN</span><b>IQ</b></div><div className="glass-cube cube-b"><Activity size={25}/><small>INSIGHT</small></div><div className="glass-cube cube-c"><span>4</span><small>REASONS</small></div><div className="sphere"><div className="sphere-shine"/></div><div className="hero-caption"><span className="live-dot"/> TEXT → SIGNAL → ACTION</div></div>
     </section>
     <section className="landing-proof"><div><strong>01</strong><span>Understand the reason behind returns</span></div><div><strong>02</strong><span>Spot repeat issues across categories</span></div><div><strong>03</strong><span>Prioritize operational improvements</span></div></section>
-    <section className="landing-section" id="problem"><span className="eyebrow">THE BUSINESS PROBLEM</span><h2>Returns are expensive.<br/><em>Unstructured feedback hides why.</em></h2><p>Teams may receive hundreds or thousands of return comments, but those comments are difficult to compare consistently. ReturnIQ helps turn that text into a structured view that teams can investigate.</p><div className="problem-cards"><article><Ruler/><h3>Fit & sizing friction</h3><p>Find recurring fit complaints that may point to size charts, product dimensions or unclear product guidance.</p></article><article><ShieldCheck/><h3>Product quality signals</h3><p>Surface repeated reports of damage or defects for quality and packaging investigation.</p></article><article><Package/><h3>Catalog mismatches</h3><p>Identify reports that the received item does not match what the customer ordered.</p></article><article><Truck/><h3>Delivery experience</h3><p>Understand how often late delivery appears in customer return explanations.</p></article></div></section>
-    <section className="landing-section platform-section" id="platform"><span className="eyebrow">THE RETURNIQ PLATFORM</span><h2>One workspace. From comment<br/>to operational insight.</h2><div className="platform-grid"><div className="platform-feature"><BarChart3/><b>Returns intelligence dashboard</b><p>Category mix, confidence distribution, low-confidence review queues and category drill-downs.</p></div><div className="platform-feature"><UploadCloud/><b>CSV-to-dashboard workflow</b><p>Upload review data and classify all valid rows in manageable chunks, with progress and export.</p></div><div className="platform-feature"><BrainCircuit/><b>Two local NLP approaches</b><p>Compare a TF-IDF baseline with a fine-tuned DistilBERT model without paid inference APIs.</p></div><div className="platform-feature"><Search/><b>Review-level traceability</b><p>Filter, search and inspect the original customer comment behind each predicted category.</p></div></div></section>
+    <section className="landing-section" id="problem"><span className="eyebrow">THE BUSINESS PROBLEM</span><h2>Returns are expensive.<br/><em>Unstructured feedback hides why.</em></h2><p>Teams may receive hundreds or thousands of return comments, but those comments are difficult to compare consistently. StanVin helps turn that text into a structured view that teams can investigate.</p><div className="problem-cards"><article><Ruler/><h3>Fit & sizing friction</h3><p>Find recurring fit complaints that may point to size charts, product dimensions or unclear product guidance.</p></article><article><ShieldCheck/><h3>Product quality signals</h3><p>Surface repeated reports of damage or defects for quality and packaging investigation.</p></article><article><Package/><h3>Catalog mismatches</h3><p>Identify reports that the received item does not match what the customer ordered.</p></article><article><Truck/><h3>Delivery experience</h3><p>Understand how often late delivery appears in customer return explanations.</p></article></div></section>
+    <section className="landing-section platform-section" id="platform"><span className="eyebrow">THE StanVin PLATFORM</span><h2>One workspace. From comment<br/>to operational insight.</h2><div className="platform-grid"><div className="platform-feature"><BarChart3/><b>Returns intelligence dashboard</b><p>Category mix, confidence distribution, low-confidence review queues and category drill-downs.</p></div><div className="platform-feature"><UploadCloud/><b>CSV-to-dashboard workflow</b><p>Upload review data and classify all valid rows in manageable chunks, with progress and export.</p></div><div className="platform-feature"><BrainCircuit/><b>Two local NLP approaches</b><p>Compare a TF-IDF baseline with a fine-tuned DistilBERT model without paid inference APIs.</p></div><div className="platform-feature"><Search/><b>Review-level traceability</b><p>Filter, search and inspect the original customer comment behind each predicted category.</p></div></div></section>
     <section className="landing-section workflow-section" id="workflow"><span className="eyebrow">HOW IT WORKS</span><h2>Turn customer language<br/>into a clearer action plan.</h2><div className="landing-steps">{[['01','Upload','Bring a CSV of return comments or test a single review.'],['02','Classify','Run local NLP models to assign one of four return reasons.'],['03','Explore','Inspect the category distribution, confidence and examples.'],['04','Improve','Use repeated signals to guide product, quality and delivery reviews.']].map(s=><div key={s[0]}><b>{s[0]}</b><h3>{s[1]}</h3><p>{s[2]}</p></div>)}</div></section>
-    <section className="landing-bottom"><div><span className="eyebrow light-eyebrow">SEE THE SIGNALS IN YOUR DATA</span><h2>Make every return comment<br/><em>count toward a better decision.</em></h2><p>Explore the working ReturnIQ workspace.</p></div><button className="primary-button" onClick={onEnter}>Enter ReturnIQ <ArrowRight size={17}/></button></section>
-    <footer className="landing-footer"><b>ReturnIQ</b><span>Local NLP · Four return reason classes · Decision support for e-commerce teams</span></footer>
+    <section className="landing-bottom"><div><span className="eyebrow light-eyebrow">SEE THE SIGNALS IN YOUR DATA</span><h2>Make every return comment<br/><em>count toward a better decision.</em></h2><p>Explore the working StanVin workspace.</p></div><button className="primary-button" onClick={onEnter}>Enter StanVin <ArrowRight size={17}/></button></section>
+    <footer className="landing-footer"><b>StanVin</b><span>Local NLP · Four return reason classes · Decision support for e-commerce teams</span></footer>
   </div>
 }
 

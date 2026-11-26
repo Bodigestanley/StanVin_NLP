@@ -1,468 +1,168 @@
+# StanVin — Returns Intelligence
 
-<div align="center">
+**StanVin** is an NLP-powered returns intelligence platform that turns unstructured e-commerce return comments into structured signals. It helps teams understand why customers return products and identify recurring issues across sizing, product quality, catalog accuracy, and delivery experience.
 
-# 🚀 ReturnIQ
+> The screenshots below show the current StanVin interface.
 
-### 🛍️ E-Commerce Returns Intelligence Platform
+## Product Screenshots
 
-**Every return has a reason. Find it.**
+### 1. Landing Page
 
-<img src="docs/images/landing-page.png" width="100%" alt="ReturnIQ Landing Page"/>
+![StanVin landing page](docs/images/landing-page.png)
 
-<br/>
+### 2. Prediction Studio
 
-[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-Explore_ReturnIQ-294B3C?style=for-the-badge)](https://return-iq.vercel.app)
-[![Frontend](https://img.shields.io/badge/Frontend-Vercel-black?style=for-the-badge&logo=vercel)](https://return-iq.vercel.app)
-[![Backend](https://img.shields.io/badge/Backend-Render-46E3B7?style=for-the-badge&logo=render)](https://returniq-backend-90p6.onrender.com)
-[![Python](https://img.shields.io/badge/Python-3.12-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
-[![React](https://img.shields.io/badge/React-Vite-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
+Classify an individual customer return comment, view the predicted return reason, and inspect the model's class-score distribution.
 
-</div>
+![StanVin Prediction Studio](docs/images/prediction-studio.png)
 
----
+### 3. Model Laboratory
 
-## 💡 Overview
+Compare the TF-IDF + Logistic Regression baseline with the fine-tuned DistilBERT model configuration.
 
-ReturnIQ is an AI-powered e-commerce returns intelligence platform that transforms unstructured customer return comments into actionable business insights using Natural Language Processing (NLP) and Machine Learning.
+![StanVin Model Laboratory](docs/images/model-laboratory.png)
 
-E-commerce businesses receive thousands of product return comments. These comments contain valuable information about product sizing, damaged items, incorrect products, and delivery issues.
+### 4. Model Evaluation
 
-ReturnIQ automatically analyzes and classifies these comments, helping businesses understand customer dissatisfaction, identify recurring issues, and make better operational decisions.
+The evaluation view includes model comparison and confusion matrices for the four return categories.
 
-### 🎯 Return Categories
+![StanVin model evaluation and confusion matrices](docs/images/model-evaluation.png)
 
-| Category | Description |
+## Key Features
+
+- **Return-reason classification:** classify customer comments into four categories:
+  - Sizing
+  - Damaged Item
+  - Wrong Product
+  - Late Delivery
+- **Prediction Studio:** submit a single comment and review the predicted class and class scores.
+- **Batch Intelligence:** process multiple return comments in a batch.
+- **Dataset Explorer:** inspect the dataset used by the application.
+- **Model Laboratory:** review the baseline and transformer model configurations.
+- **Evaluation views:** compare model metrics and inspect confusion matrices.
+- **Review-level traceability:** retain the original customer comment alongside its predicted category.
+- **API-backed application:** React frontend communicates with a FastAPI backend.
+
+## Technology Stack
+
+| Layer | Technologies |
 |---|---|
-| 📏 Sizing | Product size or fit did not meet expectations |
-| 📦 Damaged Item | Product arrived damaged or defective |
-| 🔄 Wrong Product | Customer received an incorrect product |
-| 🚚 Late Delivery | Product arrived later than expected |
+| Frontend | React, TypeScript, Vite |
+| Backend | Python, FastAPI |
+| NLP baseline | TF-IDF, Logistic Regression |
+| Transformer model | DistilBERT configuration |
+| Data and evaluation | Python machine-learning and data-processing libraries |
+| Database | PostgreSQL integration (when configured) |
 
----
+## Return Categories
 
-## ✨ Key Features
+| Category | What it represents |
+|---|---|
+| Sizing | The product does not fit as expected |
+| Damaged Item | The product arrived damaged or defective |
+| Wrong Product | The received item differs from the ordered item |
+| Late Delivery | The order arrived later than expected |
 
-- 🤖 **AI-powered classification** – Automatically identifies customer return reasons.
-- 🧠 **Two ML models** – TF-IDF + Logistic Regression and fine-tuned DistilBERT.
-- 🔍 **Prediction Studio** – Classifies individual customer comments.
-- 📊 **Probability distribution** – Displays scores across all four categories.
-- 📁 **Batch Intelligence** – Supports batch-oriented return comment analysis.
-- 🗂️ **Dataset Explorer** – Explore the classification dataset.
-- 🧪 **Model Laboratory** – Compare machine learning models.
-- 📈 **Confusion Matrix** – Visualize actual and predicted classifications.
-- 🗄️ **PostgreSQL integration** – Database-backed application.
-- ⚡ **Fast inference** – Lightweight TF-IDF model for production deployment.
-
----
-
-## 🖥️ Application Screenshots
-
-### 🏠 Landing Page
-
-The landing page introduces ReturnIQ and its customer returns intelligence workflow.
-
-<img src="docs/images/landing-page.png" width="100%" alt="ReturnIQ Landing Page"/>
-
-### 🔮 Prediction Studio
-
-Classify individual customer return comments and inspect the predicted category and probability distribution.
-
-<img src="docs/images/prediction-studio.png" width="100%" alt="ReturnIQ Prediction Studio"/>
-
-### 🧪 Model Laboratory
-
-Compare traditional machine learning with transformer-based NLP using the same test dataset.
-
-<img src="docs/images/model-laboratory.png" width="100%" alt="ReturnIQ Model Laboratory"/>
-
-### 📊 Confusion Matrix
-
-Visualize classification performance for both models across the four return categories.
-
-<img src="docs/images/confusion-matrix.png" width="100%" alt="TF-IDF and DistilBERT Confusion Matrices"/>
-
----
-
-## 🧠 Machine Learning Models
-
-ReturnIQ implements two different machine learning approaches for customer return reason classification.
-
-### 1. TF-IDF + Logistic Regression
-
-A traditional machine learning approach that converts customer comments into numerical features using Term Frequency-Inverse Document Frequency (TF-IDF).
-
-The extracted word and bigram features are classified using Logistic Regression.
-
-**Advantages:**
-- Lightweight model architecture.
-- Fast CPU inference.
-- Interpretable feature weights.
-- Suitable for resource-constrained deployment.
-
-### 2. Fine-tuned DistilBERT
-
-A transformer-based NLP model fine-tuned for the four return reason categories.
-
-DistilBERT uses contextual token representations to understand the meaning of customer comments beyond individual word frequencies.
-
-**Advantages:**
-- Context-aware text representations.
-- Better understanding of word relationships.
-- Fine-tuned for the ReturnIQ classification task.
-- Supports contextual text classification.
-
-### ⚖️ Model Comparison
-
-| Feature | TF-IDF + Logistic Regression | Fine-tuned DistilBERT |
-|---|---|---|
-| Approach | Traditional ML | Transformer NLP |
-| Text representation | Word and bigram TF-IDF | Contextual embeddings |
-| Model architecture | Logistic Regression | DistilBERT |
-| Inference | Lightweight | Computationally intensive |
-| Interpretability | Feature weights | Contextual representations |
-| Production deployment | Render | Local development |
-
----
-
-## 📈 Model Evaluation
-
-Both models were evaluated using the same **3,000-row synthetic test split**, containing 750 examples per category.
-
-### Evaluation Metrics
-
-| Metric | TF-IDF + Logistic Regression | Fine-tuned DistilBERT |
-|---|---:|---:|
-| Accuracy | 100.0% | 100.0% |
-| Macro Precision | 100.0% | 100.0% |
-| Macro Recall | 100.0% | 100.0% |
-| Macro F1-score | 100.0% | 100.0% |
-| Weighted F1-score | 100.0% | 100.0% |
-
-### Confusion Matrix Summary
-
-| Actual Category | TF-IDF Correct | DistilBERT Correct |
-|---|---:|---:|
-| Sizing | 750 | 750 |
-| Damaged Item | 750 | 750 |
-| Wrong Product | 750 | 750 |
-| Late Delivery | 750 | 750 |
-| **Total** | **3,000** | **3,000** |
-
-### Evaluation Note
-
-The displayed results are development results obtained using synthetic data. They do not establish real-world model performance.
-
-Further validation using representative, independently labelled customer return comments is necessary before using these predictions for actual business decisions.
-
----
-
-## 🏗️ System Architecture
+## Application Architecture
 
 ```mermaid
-flowchart TD
-    A["Customer Return Comment"] --> B["React + Vite Frontend"]
-    B --> C["FastAPI Backend"]
-    C --> D{"Selected ML Model"}
-
-    D --> E["TF-IDF + Logistic Regression"]
-    D --> F["Fine-tuned DistilBERT"]
-
-    E --> G["Predicted Return Category"]
+flowchart LR
+    A[Customer return comment] --> B[React + TypeScript frontend]
+    B --> C[FastAPI backend]
+    C --> D[Text preprocessing]
+    D --> E[TF-IDF + Logistic Regression]
+    D --> F[DistilBERT model configuration]
+    E --> G[Predicted return reason and scores]
     F --> G
-
-    G --> H["Probability Distribution"]
-    H --> B
-
-    C --> I[("PostgreSQL Database")]
+    G --> B
+    C --> H[Prediction and evaluation data]
+    H --> I[PostgreSQL, when configured]
 ```
 
-### 🔄 Prediction Workflow
+## Run Locally
 
-1. Customer enters a return comment.
-2. Frontend sends the comment to the FastAPI backend.
-3. Backend processes the selected machine learning model.
-4. Model predicts one of the four return categories.
-5. Prediction confidence and class probabilities are returned.
-6. Frontend displays the classification results.
+### Prerequisites
 
----
+- Python installed
+- Node.js and npm installed
+- Git installed
 
-## 🛠️ Technology Stack
-
-### Frontend
-- React
-- TypeScript
-- Vite
-- HTML5
-- CSS3
-
-### Backend
-- Python
-- FastAPI
-- SQLAlchemy
-- Pydantic
-
-### Machine Learning & NLP
-- Scikit-learn
-- TF-IDF Vectorization
-- Logistic Regression
-- Hugging Face Transformers
-- DistilBERT
-- PyTorch
-
-### Database
-- PostgreSQL
-- SQLite (local development, if configured)
-
-### Tools & Deployment
-- Git
-- GitHub
-- VS Code
-- Vercel
-- Render
-- REST API
-
----
-
-## 📁 Project Structure
-
-```text
-ReturnIQ/
-│
-├── backend/
-│   ├── app/
-│   │   ├── main.py
-│   │   ├── config.py
-│   │   └── ...
-│   │
-│   ├── requirements.txt
-│   └── .python-version
-│
-├── frontend/
-│   ├── src/
-│   ├── public/
-│   ├── package.json
-│   └── vite.config.ts
-│
-├── models/
-│   ├── tfidf_returniq.joblib
-│   │
-│   └── distilbert/
-│       └── final/
-│
-├── docs/
-│   └── images/
-│       ├── landing-page.png
-│       ├── prediction-studio.png
-│       ├── confusion-matrix.png
-│       └── model-laboratory.png
-│
-├── .gitignore
-└── README.md
-```
-
----
-
-## ⚙️ Getting Started
-
-### 📌 Prerequisites
-
-Install the following:
-
-- Python 3.12
-- Node.js and npm
-- Git
-- PostgreSQL (if using a local PostgreSQL database)
-
-### 1️⃣ Clone the Repository
-
-```bash
-git clone https://github.com/Lakshith-P/ReturnIQ.git
-
-cd ReturnIQ
-```
-
-### 2️⃣ Backend Setup
-
-Open a terminal:
+### 1. Clone the repository
 
 ```powershell
-cd backend
-
-python -m venv .venv
-
-.\.venv\Scripts\Activate.ps1
-
-pip install -r requirements.txt
+git clone https://github.com/Bodigestanley/StanVin_NLP.git
+cd StanVin_NLP
 ```
 
-### 3️⃣ Configure Environment Variables
+### 2. Start the backend
 
-Create a `.env` file inside the backend directory.
-
-```env
-DATABASE_URL=postgresql+psycopg://USER:PASSWORD@localhost:5432/returniq
-FRONTEND_ORIGIN=http://localhost:5173
-MODEL_DIR=models/tfidf
-```
-
-Replace the database credentials with your own local PostgreSQL credentials.
-
-**Never commit `.env` files, database passwords, or production secrets to GitHub.**
-
-### 4️⃣ Start the Backend
+From the project root, use the backend startup script included in the repository:
 
 ```powershell
-uvicorn app.main:app --reload --port 8000
+.\start_backend.ps1
 ```
 
-Backend:
+Keep this terminal running. If your local project uses a different backend startup command, follow the backend instructions and dependency file included in the repository.
 
-```text
-http://localhost:8000
-```
+### 3. Start the frontend
 
-Interactive API documentation:
-
-```text
-http://localhost:8000/docs
-```
-
-### 5️⃣ Frontend Setup
-
-Open another terminal:
+Open a second terminal:
 
 ```powershell
 cd frontend
-
 npm install
-```
-
-Create a `.env` file inside the frontend directory:
-
-```env
-VITE_API_BASE_URL=http://127.0.0.1:8000
-```
-
-Start the frontend:
-
-```powershell
 npm run dev
 ```
 
-Open the application:
+Open the local URL printed by Vite in your browser (commonly `http://localhost:5173`).
+
+## API Endpoints Used by the Frontend
+
+The frontend is configured to communicate with these backend routes:
+
+| Endpoint | Purpose |
+|---|---|
+| `GET /api/health` | Backend health check |
+| `GET /api/predictions/recent?limit=500` | Retrieve recent predictions |
+| `GET /api/evaluation/latest` | Retrieve the latest evaluation |
+| `POST /api/predict` | Classify one return comment |
+| `POST /api/predict/batch` | Classify a batch of return comments |
+
+## Model and Evaluation Notes
+
+- The baseline classifier shown in the interface is **TF-IDF + Logistic Regression**.
+- The interface also presents a **fine-tuned DistilBERT** model comparison. The screenshot supplied for this README shows the DistilBERT model artifact as missing in that local run; it should not be described as available for inference until its artifact has been trained or supplied.
+- The evaluation screenshot reports 100% metrics on a 3,000-row synthetic test split (750 examples per class). These are development results on synthetic data, not evidence of real-world performance.
+- Validate the model using representative, independently labelled customer-return data before using it for business decisions.
+- Model confidence/probability scores should not be treated as calibrated probabilities unless calibration has been independently evaluated.
+- PostgreSQL is optional for local operation only if the application configuration supports running without it. Configure the database credentials and service before relying on database-backed features.
+
+## Project Structure
 
 ```text
-http://localhost:5173
+StanVin_NLP/
+├── frontend/              # React + TypeScript + Vite application
+├── backend/               # FastAPI backend and API logic
+├── docs/
+│   └── images/            # Current StanVin UI screenshots
+├── start_backend.ps1      # Backend startup script
+└── README.md
 ```
 
-### 6️⃣ Local Model Availability
+*The exact contents of the repository may include additional training scripts, datasets, model artifacts, and configuration files.*
 
-The local development environment supports:
+## Future Improvements
 
-- TF-IDF + Logistic Regression
-- Fine-tuned DistilBERT
+- Evaluate with larger, real-world, independently labelled return datasets.
+- Improve class balance and monitor model performance over time.
+- Train and package the DistilBERT model artifact for inference.
+- Add model and data versioning.
+- Strengthen deployment, monitoring, and database configuration.
 
-Ensure the corresponding trained model artifacts and required ML dependencies are available before selecting a model.
+## Author
 
----
-
-## 🔌 API Documentation
-
-ReturnIQ provides REST API endpoints through FastAPI.
-
-| Endpoint | Method | Description |
-|---|---|---|
-| `/api/health` | GET | Backend health and model availability |
-| `/api/predict` | POST | Predict a customer return reason |
-
-### Example Prediction Request
-
-```json
-{
-  "text": "The shoes are too small for my feet",
-  "model": "tfidf"
-}
-```
-
-### Example Prediction Response
-
-```json
-{
-  "predicted_category": "Sizing",
-  "predicted_reason": "Product size or fit did not meet expectations",
-  "confidence": 0.5576,
-  "model_used": "TF-IDF + Logistic Regression",
-  "demo_fallback": false
-}
-```
-
-The actual prediction confidence and probability distribution depend on the customer comment and selected model.
+**StanVin**
 
 ---
 
-## ☁️ Deployment
-
-ReturnIQ uses separate hosting services for its frontend and backend.
-
-### 🌐 Frontend – Vercel
-
-Live application:
-
-https://return-iq.vercel.app
-
-### ⚙️ Backend – Render
-
-Backend service:
-
-https://returniq-backend-90p6.onrender.com
-
-### 🚀 Production Model Availability
-
-| Component | Environment | Status |
-|---|---|---|
-| React Frontend | Vercel | Deployed |
-| FastAPI Backend | Render | Deployed |
-| PostgreSQL | Render | Configured |
-| TF-IDF + Logistic Regression | Render | Production |
-| Fine-tuned DistilBERT | Localhost | Development |
-
-The production backend uses the lightweight TF-IDF model because of the memory limitations of the Render Free instance.
-
-Both models are available in the local development environment.
-
----
-
-## 🔮 Future Improvements
-
-- Validate classification using real-world customer return datasets.
-- Improve model performance on ambiguous customer comments.
-- Add advanced batch analytics and return trend visualization.
-- Implement explainable AI for prediction-level insights.
-- Explore optimized transformer inference for resource-constrained deployment.
-- Introduce product-level return analysis.
-- Generate automated operational recommendations.
-
----
-
-## 🎯 Project Goal
-
-ReturnIQ aims to transform customer return feedback into meaningful business intelligence.
-
-By identifying recurring return reasons, e-commerce businesses can better understand customer dissatisfaction, improve product quality, optimize product descriptions, and enhance delivery experiences.
-
----
-
-<div align="center">
-
-## 🌿 ReturnIQ
-
-### Customer Signal. Business Clarity.
-
-**Turning customer feedback into actionable intelligence.**
-
-[🌐 Live Demo](https://return-iq.vercel.app) · [💻 GitHub Repository](https://github.com/Lakshith-P/ReturnIQ)
-
-Built with ❤️ using Machine Learning, NLP and Full-Stack Development.
-
-</div>
+If you find an issue or have a suggestion, please open an issue in this repository.
