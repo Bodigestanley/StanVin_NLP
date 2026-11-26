@@ -8,25 +8,25 @@
 
 ### 1. Landing Page
 
-![StanVin landing page](docs/images/landing-page.png)
+![StanVin landing page](images/landing-page.png)
 
 ### 2. Prediction Studio
 
 Classify an individual customer return comment, view the predicted return reason, and inspect the model's class-score distribution.
 
-![StanVin Prediction Studio](docs/images/prediction-studio.png)
+![StanVin Prediction Studio](images/prediction-studio.png)
 
 ### 3. Model Laboratory
 
 Compare the TF-IDF + Logistic Regression baseline with the fine-tuned DistilBERT model configuration.
 
-![StanVin Model Laboratory](docs/images/model-laboratory.png)
+![StanVin Model Laboratory](images/model-laboratory.png)
 
 ### 4. Model Evaluation
 
 The evaluation view includes model comparison and confusion matrices for the four return categories.
 
-![StanVin model evaluation and confusion matrices](docs/images/model-evaluation.png)
+![StanVin model evaluation and confusion matrices](images/model-evaluation.png)
 
 ## Key Features
 
